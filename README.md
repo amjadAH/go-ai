@@ -6,11 +6,10 @@ a simple implementation for chatGPT with go.
 
 ## Installation
 
-clone the repository, there is no dependencies, so don't worry about it.
+you can install the program with the following command:
 
 ```bash
-git clone https://github.com/amjadAH/go-ai.git
-cd go-ai
+go install github.com/amjadAH/go-ai@latest
 ```
 
 ## Usage
@@ -24,7 +23,7 @@ export OPENAI_TOKEN=YOUR_API_KEY
 then you can run the program with the following command:
 
 ```bash
-go run *.go
+go-ai
 ```
 
 ---
