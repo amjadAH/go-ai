@@ -4,9 +4,11 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"time"
 )
 
 var request = &Request{}
+var spinner = newSpinner()
 
 func main() {
 	if openAiToken == "" {
@@ -21,12 +23,37 @@ func main() {
 	}()
 
 	scanner := bufio.NewScanner(os.Stdin)
-	fmt.Print("You: ")
+	print("Set message system, ex. \"You are a backend developer.\" (optional): ")
+	scanner.Scan()
+	if scanner.Text() != "" {
+		messages = append(messages, Message{Role: "system", Content: scanner.Text()})
+	}
+	print("You: ")
 	for scanner.Scan() {
 		msg := scanner.Text()
-		fmt.Println("GPT: " + request.send(msg))
-		fmt.Println("---------------------------------")
-		fmt.Print("You: ")
-	}
 
+		resp := make(chan Message, 1)
+		go func() {
+			resp <- request.send(msg)
+		}()
+
+	SelectLoop:
+		for {
+			select {
+			case respMsg := <-resp:
+				print("GPT: ")
+				for _, char := range respMsg.Content {
+					print(string(char))
+					time.Sleep(25 * time.Millisecond)
+				}
+				fmt.Println("\n---------------------------------")
+				print("You: ")
+				break SelectLoop
+			default:
+				fmt.Println(spinner.spin())
+				time.Sleep(100 * time.Millisecond)
+				fmt.Printf("\033[1A")
+			}
+		}
+	}
 }

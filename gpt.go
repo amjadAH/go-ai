@@ -11,12 +11,12 @@ type Request struct {
 	Payload Payload
 }
 
-func (r *Request) send(msg string) string {
+func (r *Request) send(msg string) Message {
 	r.appendMessage(Message{Role: "user", Content: msg})
 	return r.performPostRequest()
 }
 
-func (r *Request) performPostRequest() string {
+func (r *Request) performPostRequest() Message {
 	r.Payload = Payload{Model: model, Messages: messages}
 	payloadBytes, _ := json.Marshal(r.Payload)
 
@@ -41,7 +41,7 @@ func (r *Request) performPostRequest() string {
 	msg := r.extractMessage(resp.Body)
 	r.appendMessage(msg)
 
-	return msg.Content
+	return msg
 }
 
 func (r *Request) extractMessage(body io.Reader) Message {
